@@ -74,9 +74,9 @@ libpe_OBJS = $(addprefix ${libpe_BUILDDIR}/, $(addsuffix .o, $(basename ${libpe_
 
 ####### Build rules
 
-.PHONY : libpe install strip-binaries install-strip uninstall clean
+.PHONY : libpe staticlibpe install strip-binaries install-strip uninstall clean
 
-all: libpe
+all: libpe staticlibpe
 
 # FIX: WARNING.. ld expects -l option at the END of the command line or after the object files.
 #      From gcc's documentation:
@@ -116,6 +116,11 @@ endif
 $(libpe_BUILDDIR)/%.o: %.c
 	@$(CHK_DIR_EXISTS) $(dir $@) || $(MKDIR) $(dir $@)
 	$(CC) -c $(CFLAGS) $(CPPFLAGS) -o $@ $<
+
+staticlibpe: $(libpe_BUILDDIR)/libpe.a
+
+$(libpe_BUILDDIR)/libpe.a: $(libpe_OBJS)
+	cd $(libpe_BUILDDIR) && ar rcs libpe.a $(libpe_OBJS)
 
 install: installdirs
 ifeq ($(PLATFORM_OS), Linux)
